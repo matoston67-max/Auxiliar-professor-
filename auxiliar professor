@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BNCC PRO FINAL</title>
+
+<style>
+body{font-family:Arial;margin:0;background:#eef2f7;}
+header{background:#2e7d32;color:white;padding:15px;text-align:center;}
+.menu{display:flex;overflow:auto;background:#388E3C;}
+.menu button{flex:1;padding:10px;border:none;color:white;background:none;}
+.container{padding:15px;}
+.card{background:white;padding:15px;margin-bottom:10px;border-radius:10px;}
+button{padding:8px;border:none;border-radius:6px;margin-top:5px;}
+.add{background:green;color:white;}
+.edit{background:blue;color:white;}
+.delete{background:red;color:white;}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>📚 Sistema Escolar BNCC PRO</h2>
+<input id="professor" placeholder="Professor">
+<input id="escola" placeholder="Escola">
+</header>
+
+<div class="menu">
+<button onclick="trocar('1')">1º</button>
+<button onclick="trocar('2')">2º</button>
+<button onclick="trocar('3')">3º</button>
+<button onclick="trocar('4')">4º</button>
+<button onclick="trocar('5')">5º</button>
+<button onclick="trocar('p1')">Alf 1</button>
+<button onclick="trocar('p2')">Alf 2</button>
+</div>
+
+<div class="container">
+
+<div class="card">
+<input id="busca">
+<button onclick="buscar()">Buscar Aula</button>
+<button onclick="buscarBNCC()">Buscar BNCC</button>
+</div>
+
+<div class="card">
+<input id="nome" placeholder="Aluno">
+<select id="disciplina">
+<option>Matemática</option>
+<option>Português</option>
+<option>Geografia</option>
+<option>História</option>
+<option>Artes</option>
+<option>Alfabetização</option>
+</select>
+
+<textarea id="relatorio" placeholder="Escreva simples..."></textarea>
+<textarea id="aula" placeholder="Plano de aula"></textarea>
+
+<button class="add" onclick="salvar()">Salvar</button>
+<button onclick="gerarBNCC()">Gerar BNCC</button>
+</div>
+
+<div class="card">
+<button onclick="copiarLink()">Compartilhar</button>
+<img id="qr">
+</div>
+
+<div id="listas"></div>
+
+</div>
+
+<script>
+let dados={"1":[],"2":[],"3":[],"4":[],"5":[],"p1":[],"p2":[]};
+let atual="1",edit=null;
+
+function trocar(t){atual=t;mostrar();}
+
+function buscar(){
+window.open("https://www.google.com/search?q="+busca.value+" plano de aula");
+}
+
+function buscarBNCC(){
+window.open("https://www.google.com/search?q="+busca.value+" BNCC habilidades");
+}
+
+function salvar(){
+let obj={nome:nome.value,disciplina:disciplina.value,relatorio:relatorio.value,aula:aula.value};
+if(edit!=null){dados[atual][edit]=obj;edit=null;}else{dados[atual].push(obj);}
+limpar();mostrar();
+}
+
+function mostrar(){
+let html="";
+dados[atual].forEach((a,i)=>{
+html+=`<div class="card">
+<b>${a.nome}</b><br>${a.disciplina}<br>
+<p>${a.relatorio}</p><i>${a.aula}</i><br>
+<button class="edit" onclick="editar(${i})">Editar</button>
+<button class="delete" onclick="excluir(${i})">Excluir</button>
+</div>`;
+});
+listas.innerHTML=html;
+gerarQR();
+}
+
+function editar(i){
+let a=dados[atual][i];
+nome.value=a.nome;
+disciplina.value=a.disciplina;
+relatorio.value=a.relatorio;
+aula.value=a.aula;
+edit=i;
+}
+
+function excluir(i){
+if(confirm("Excluir?")){
+dados[atual].splice(i,1);
+mostrar();
+}
+}
+
+function gerarBNCC(){
+let t=relatorio.value.toLowerCase();
+
+let texto="O aluno apresentou desenvolvimento nas competências previstas pela BNCC, ";
+
+if(t.includes("leitura")) texto+="com avanço nas habilidades de leitura e interpretação textual, ";
+if(t.includes("escrita")) texto+="demonstrando progresso na produção escrita, ";
+if(t.includes("dificuldade")) texto+="ainda apresentando desafios que estão sendo trabalhados pedagogicamente, ";
+if(t.includes("melhorou")) texto+="com evolução significativa no processo de aprendizagem, ";
+
+texto+="e participação ativa nas atividades propostas.";
+
+relatorio.value=texto;
+}
+
+function copiarLink(){
+navigator.clipboard.writeText(location.href);
+alert("Link copiado!");
+}
+
+function gerarQR(){
+let link=encodeURIComponent(location.href);
+qr.src="https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+link;
+}
+
+function limpar(){
+nome.value="";relatorio.value="";aula.value="";
+}
+
+mostrar();
+</script>
+
+</body>
+</html>
